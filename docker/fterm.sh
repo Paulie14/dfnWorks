@@ -15,6 +15,14 @@ docker_user="--user=$uid:$gid --volume=/etc/group:/etc/group:ro --volume=/etc/pa
 # docker_user=""
 docker_args="-t --rm ${docker_user} --name ${docker_contname} -w /$(pwd) -v /$(pwd):/$(pwd)"
 
-# interactive
-docker run -it --rm --name ${docker_contname} ${docker_user} \
-  -w /$(pwd) -v /$(pwd):/$(pwd) --entrypoint "/bin/bash" ${docker_container}
+if [ -n "$1" ]
+then
+    # command
+    docker run -t --rm --name ${docker_contname} ${docker_user} \
+        -w /$(pwd) -v /$(pwd):/$(pwd) ${docker_container} $@
+else
+    # interactive
+    docker run -it --rm --name ${docker_contname} ${docker_user} \
+        -w /$(pwd) -v /$(pwd):/$(pwd) \
+        --entrypoint "/bin/bash" ${docker_container}
+fi
