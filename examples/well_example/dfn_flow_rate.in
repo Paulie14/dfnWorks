@@ -84,9 +84,9 @@ REGION All
   /
 END 
 
-REGION pinned 
-  FILE pinned.ex
-END
+# REGION pinned
+#   FILE pinned.ex
+# END
 
 REGION inflow
   FILE well_inject.ex
