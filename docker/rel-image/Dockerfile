@@ -62,6 +62,9 @@ RUN ls xfehm*
 # build dfnWorks
 ENV dfnworks_PATH="/workspace/dfnWorks/"
 
+RUN ["pip3","install","setuptools","numpy","h5py","matplotlib","scipy","networkx",\
+    "rich","pyvtk","fpdf","rich","seaborn","mplstereonet","mpmath","datetime"]
+
 # from repository
 # WORKDIR ${HOME}/workspace/
 # RUN git clone ${source_repository}
@@ -73,48 +76,43 @@ RUN mkdir $dfnworks_PATH
 WORKDIR $dfnworks_PATH
 COPY . .
 RUN ["mkdir","bin"]
-WORKDIR $dfnworks_PATH/pydfnworks
-
-RUN ["pip3","install","setuptools","numpy","h5py","matplotlib","scipy","networkx",\
-    "rich","pyvtk","fpdf","rich","seaborn","mplstereonet","mpmath","datetime"]
-RUN python3 setup.py bdist_wheel
-#RUN python -m pip install dist/pydfnworks-2.6.1-py3-none-any.whl
-# version in dfnWorks/pydfnworks/pydfnworks/release.py
-RUN python3 -m pip install dist/pydfnworks-2.7-py3-none-any.whl
 
 WORKDIR $dfnworks_PATH/C_stor_correct
 RUN ["make","clean"]
 RUN ["make"]
 RUN ["cp","correct_stor","../bin/correct_stor"]
 ENV CORRECT_STOR_EXE="$dfnworks_PATH/bin/correct_stor"
-WORKDIR $dfnworks_PATH
 
 WORKDIR $dfnworks_PATH/C_uge_correct
 RUN ["make","clean"]
 RUN ["make"]
 RUN ["cp","correct_uge","../bin/correct_uge"]
 ENV CORRECT_UGE_EXE="/workspace/dfnWorks/bin/correct_uge"
-WORKDIR $dfnworks_PATH
 
 WORKDIR $dfnworks_PATH/DFNGen
 RUN ["make","clean"]
 RUN ["make","-j","4"]
 RUN ["cp","DFNGen","../bin/DFNGen"]
 ENV DFNGEN_EXE="/workspace/dfnWorks/bin/DFNGen"
-WORKDIR $dfnworks_PATH
 
 WORKDIR $dfnworks_PATH/DFNTrans
 RUN ["make","clean"]
 RUN ["make","-j","4"]
 RUN ["cp","DFNTrans","../bin/DFNTrans"]
 ENV DFNTRANS_EXE="/workspace/dfnWorks/bin/DFNTrans"
-WORKDIR $dfnworks_PATH
 
 WORKDIR $dfnworks_PATH/DFN_Mesh_Connectivity_Test
 RUN ["make","clean"]
 RUN ["make"]
 RUN ["cp","ConnectivityTest","../bin/ConnectivityTest"]
 ENV CONNECT_TEST_EXE="/workspace/dfnWorks/bin/ConnectivityTest"
+
+WORKDIR $dfnworks_PATH/pydfnworks
+RUN python3 setup.py bdist_wheel
+#RUN python -m pip install dist/pydfnworks-2.6.1-py3-none-any.whl
+# version in dfnWorks/pydfnworks/pydfnworks/release.py
+RUN python3 -m pip install dist/pydfnworks-2.7-py3-none-any.whl
+WORKDIR $dfnworks_PATH
 
 #############################################################
 
@@ -124,6 +122,8 @@ ENV PETSC_ARCH=""
 ENV PFLOTRAN_EXE="/workspace/pflotran/src/pflotran/pflotran"
 ENV LAGRIT_EXE="/workspace/LaGriT/src/lagrit"
 ENV FEHM_EXE="/workspace/FEHM/src/xfehm_v3.3.1"
+
+ENV MPIRUN="/usr/local/mpich_4.0.3/bin/mpirun"
 
 # ENTRYPOINT ["/workspace/pflotran/src/pflotran/pflotran"]
 # ENTRYPOINT [ "/bin/bash", "-c" ] # this requires arguments passed in quotes
