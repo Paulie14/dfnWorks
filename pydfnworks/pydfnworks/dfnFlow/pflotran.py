@@ -351,15 +351,26 @@ def pflotran(self, transient=False, restart=False, restart_file=''):
     print("=" * 80)
     print("--> Running PFLOTRAN")
 
-    mpirun = os.environ['PETSC_DIR'] + '/' + os.environ[
-        'PETSC_ARCH'] + '/bin/mpirun'
+    if 'SCRATCHDIR' in os.environ:
+        # Metacentrum wrapper for mpirun in singularity
+        mpirun = os.path.join(os.environ['SCRATCHDIR'], 'mpirun')
+    elif 'PBS_O_WORKDIR' in os.environ:
+        # Metacentrum wrapper for mpirun in singularity
+        mpirun = os.path.join(os.environ['PBS_O_WORKDIR'], 'mpirun')
+    elif 'MPIRUN' in os.environ:
+        # mpirun set in docker image
+        mpirun = os.environ['MPIRUN']
+    else:
+        # fingers crossed for default mpirun
+        mpirun = "mpirun"
 
     if not (os.path.isfile(mpirun) and os.access(mpirun, os.X_OK)):
-        # PETSc did not install MPI. Hopefully, the user has their own MPI.
-        mpirun = 'mpirun'
+        error = "--> ERROR!! mpirun unavailable: '" + mpirun + "'\n"
+        sys.stderr.write(error)
+        sys.exit(1)
 
-    cmd = mpirun + ' -np ' + str(self.ncpu) + \
-          ' ' + os.environ['PFLOTRAN_EXE'] + ' -pflotranin ' + self.local_dfnFlow_file
+    cmd = ' '.join([mpirun, '-np', str(self.ncpu), os.environ['PFLOTRAN_EXE'], \
+        '-pflotranin', self.local_dfnFlow_file])
 
     print(f"--> Running: {cmd}")
     subprocess.call(cmd, shell=True)
@@ -375,8 +386,8 @@ def pflotran(self, transient=False, restart=False, restart_file=''):
 
         print("=" * 80)
         print("--> Running PFLOTRAN")
-        cmd = os.environ['PETSC_DIR']+'/'+os.environ['PETSC_ARCH']+'/bin/mpirun -np ' + str(self.ncpu) + \
-              ' ' + os.environ['PFLOTRAN_EXE'] + ' -pflotranin ' + ntpath.basename(restart_file)
+        cmd = ' '.join([mpirun, '-np', str(self.ncpu), os.environ['PFLOTRAN_EXE'], \
+            '-pflotranin', self.local_dfnFlow_file])
         print("Running: %s" % cmd)
         subprocess.call(cmd, shell=True)
 
