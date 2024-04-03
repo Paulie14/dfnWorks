@@ -1,6 +1,8 @@
 # README
 
-For information on how to get dfnWorks up and running, please see the document dfnWorks.pdf, in this directory.
+For information on how to get dfnWorks up and running, please see the document dfnWorks.pdf, in this directory. Documentation is also available [here](https://lanl.github.io/dfnWorks/intro.html)
+
+    https://lanl.github.io/dfnWorks/intro.html
 
 ## Native build from github repository
 
@@ -47,11 +49,16 @@ Go up into the pydfnworks sub-directory:
     $ cd dfnWorks/pydfnworks/
 
 Compile The pydfnWorks Package & Install on Your Local Machine:
-    
-    $ python setup.py bdist_wheel
-    $ python -m pip install dist/pydfnworks-<CURRENT VERSION NUMBER>-py3-none-any.whl
+   
+    $ pip install -r requirements.txt
 
-**Note that the python version in dist/ needs to be consistent with the current release**
+or  
+
+    $ pip install -r requirements.txt --user
+
+if you don't have admin privileges.
+
+**Note that the python version needs to be consistent with the current release**
 
 ## Installation Requirements for Native Build
 Tools that you will need to run the dfnWorks work flow are described in 
@@ -80,6 +87,9 @@ coincident with triangle edges in the mesh and Voronoi control volumes are
 suitable for finite volume flow solvers such as FEHM and PFLOTRAN.
 
 https://lagrit.lanl.gov
+
+dfnWorks v2.8+ requires LaGriT v3.3. DFM meshing requires that LaGriT
+is built with exodus. 
 
 ### PFLOTRAN
 PFLOTRAN  is a massively parallel subsurface flow and reactive transport 
